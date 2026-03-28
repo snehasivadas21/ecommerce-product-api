@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
 
   db:
@@ -8,15 +6,34 @@ services:
     env_file: .env
     ports:
       - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
+    build:
+      context: ./shop
+      dockerfile: ../Dockerfile
+    command: >
+      sh -c "python -c \"
+import time, MySQLdb:
+while True:
+    try:
+        MySQLdb.connect(host='db', user='root', passwd='root', db='ecommerce_db')
+        print('MySQL ready!')
+        break
+    except:
+        print('Waiting for MySQL...')
+        time.sleep(2)
+\" && python manage.py migrate && python manage.py runserver 0.0.0.0:8000":
     volumes:
-      - .:/app
+      - ./shop:/app
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
