@@ -119,4 +119,4 @@ Deployed on **PythonAnywhere** at `https://ssneha.pythonanywhere.com`
 
 **Sneha**
 - GitHub: [@snehasivadas21](https://github.com/snehasivadas21)
-- Live API: [ssneha.pythonanywhere.com](https://ssneha.pythonanywhere.com)
+- Live API: [ssneha.pythonanywhere.com](https://ssneha.pythonanywhere.com/api/products/)
