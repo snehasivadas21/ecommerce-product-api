@@ -12,14 +12,15 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
 
     def list(self, request, *args, **kwargs):
-        cache_key = "product_list"
+        page = request.query_params.get('page', 1)
+        cache_key = f"product_list_{page}"
+
         data = cache.get(cache_key)
 
         if not data:
-            queryset = self.get_queryset()
-            serializer = self.get_serializer(queryset, many=True)
-            data = serializer.data
-            cache.set(cache_key, data, timeout=60)  
+            response = super().list(request, *args, **kwargs)  
+            cache.set(cache_key, response.data, timeout=60)
+            return response
 
         return Response(data)
     
